@@ -1,3 +1,7 @@
+# Rascunho de post (local); imagens só para publicação
+ARTIGO.md
+post-assets/
+
 .venv/
 .pytest_cache/
 __pycache__/

@@ -20,6 +20,7 @@ exigir_python_minimo()
 
 from chat import enviar_mensagem
 from config import get_settings
+from formatar_erro import dica_docker_markdown, resumir_erro
 from formatar_resposta import formatar_resposta
 
 
@@ -38,15 +39,13 @@ def main() -> int:
     try:
         texto = enviar_mensagem(args.prompt, model=args.model, settings=settings)
     except Exception as exc:
-        print(f"Erro: {type(exc).__name__}: {exc}", file=sys.stderr)
-        print(
-            "\nDicas:\n"
-            "  1) pip install -U 'g4f[all]'\n"
-            "  2) docker compose up -d  e  G4F_API_BASE=http://127.0.0.1:8080/v1\n"
-            "  3) python listar_provedores.py --model gpt-4o-mini\n"
-            "Docs: https://github.com/xtekky/gpt4free",
-            file=sys.stderr,
-        )
+        info = resumir_erro(exc, api_base=settings.api_base)
+        print(info.titulo, file=sys.stderr)
+        print(info.mensagem.replace("**", ""), file=sys.stderr)
+        for f in info.falhas:
+            print(f"  - {f.provedor}: {f.resumo}", file=sys.stderr)
+        if info.sugerir_docker:
+            print("\n" + dica_docker_markdown().replace("**", "").replace("```env", "").replace("```", ""), file=sys.stderr)
         return 1
 
     print(formatar_resposta(texto))

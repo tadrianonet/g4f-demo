@@ -20,6 +20,7 @@ if not python_suportado():
     st.stop()
 
 from chat import enviar_mensagem
+from formatar_erro import dica_docker_markdown, resumir_erro
 from formatar_resposta import formatar_resposta, parece_html
 
 settings = get_settings()
@@ -40,7 +41,10 @@ with st.sidebar:
     elif settings.provider:
         st.info(f"Provedor fixo: `{settings.provider}`")
     else:
-        st.info("Modo padrão: o g4f escolhe o provedor (como no README oficial).")
+        st.warning(
+            "Modo automático: vários provedores públicos podem falhar (auth, pagamento). "
+            "Para aula, prefira API local via Docker (veja README)."
+        )
     st.markdown(
         "[Documentação do cliente](https://g4f.dev/docs/client) · "
         "[Repositório no GitHub](https://github.com/xtekky/gpt4free)"
@@ -58,8 +62,14 @@ if st.button("Enviar", type="primary", disabled=not prompt.strip()):
                 with st.expander("Resposta original (HTML do provedor)"):
                     st.code(bruta, language="html")
         except Exception as exc:
-            st.error(f"{type(exc).__name__}: {exc}")
-            st.markdown(
-                "**Se falhar na sala de aula:** suba o Docker oficial (`docker compose up -d`) "
-                "e defina `G4F_API_BASE=http://127.0.0.1:8080/v1` no arquivo `.env`."
-            )
+            info = resumir_erro(exc, api_base=settings.api_base)
+            st.error(info.titulo)
+            st.markdown(info.mensagem)
+            if info.falhas:
+                st.markdown("**O que aconteceu por provedor:**")
+                for f in info.falhas:
+                    st.markdown(f"- **{f.provedor}** ({f.tipo}): {f.resumo}")
+            with st.expander("Detalhes técnicos completos"):
+                st.code(info.tecnico, language=None)
+            if info.sugerir_docker:
+                st.markdown(dica_docker_markdown())
