@@ -12,12 +12,16 @@ Não é um fork do g4f: é um **exemplo mínimo** para você instalar, executar 
 
 ## Instalação rápida
 
+Use **Python 3.11** no venv (no macOS, `python3` do sistema costuma ser 3.9 e deixa o Streamlit em tela vazia):
+
 ```bash
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
 ```
+
+Se só tiver Python 3.9, instale 3.11: `brew install python@3.11`
 
 Para todos os recursos dos provedores (navegador, etc.):
 

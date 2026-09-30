@@ -20,6 +20,7 @@ exigir_python_minimo()
 
 from chat import enviar_mensagem
 from config import get_settings
+from formatar_resposta import formatar_resposta
 
 
 def main() -> int:
@@ -48,7 +49,7 @@ def main() -> int:
         )
         return 1
 
-    print(texto)
+    print(formatar_resposta(texto))
     return 0 if texto else 2
 
 

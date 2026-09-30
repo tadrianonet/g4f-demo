@@ -4,16 +4,24 @@ Iniciar: streamlit run app.py
 """
 from __future__ import annotations
 
-from verificar_python import exigir_python_minimo
-
-exigir_python_minimo()
+import sys
 
 import streamlit as st
 
-from chat import enviar_mensagem
 from config import get_settings
+from verificar_python import mensagem_python_insuficiente, python_suportado
 
 st.set_page_config(page_title="Demo GPT4Free", layout="centered")
+
+if not python_suportado():
+    st.title("Demo GPT4Free (g4f)")
+    st.error("Versão do Python incompatível")
+    st.markdown(mensagem_python_insuficiente())
+    st.stop()
+
+from chat import enviar_mensagem
+from formatar_resposta import formatar_resposta, parece_html
+
 settings = get_settings()
 
 st.title("Demo GPT4Free (g4f)")
@@ -22,6 +30,7 @@ st.caption(
     "[GPT4Free](https://github.com/xtekky/gpt4free). "
     "Use apenas em contexto de estudo e respeite os termos dos serviços."
 )
+st.caption(f"Python {'.'.join(map(str, sys.version_info[:3]))}")
 
 with st.sidebar:
     st.header("Configuração")
@@ -41,9 +50,13 @@ prompt = st.text_area("Sua pergunta", height=120, placeholder="Explique o que é
 if st.button("Enviar", type="primary", disabled=not prompt.strip()):
     with st.spinner("Aguardando resposta..."):
         try:
-            resposta = enviar_mensagem(prompt, model=model)
+            bruta = enviar_mensagem(prompt, model=model)
+            exibicao = formatar_resposta(bruta)
             st.success("Resposta recebida")
-            st.markdown(resposta)
+            st.markdown(exibicao)
+            if parece_html(bruta):
+                with st.expander("Resposta original (HTML do provedor)"):
+                    st.code(bruta, language="html")
         except Exception as exc:
             st.error(f"{type(exc).__name__}: {exc}")
             st.markdown(

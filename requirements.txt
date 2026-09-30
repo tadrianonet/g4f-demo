@@ -1,5 +1,5 @@
-# Python 3.10+ obrigatório (g4f usa sintaxe moderna de tipos).
-g4f>=8.5.8
+# Python 3.10+ obrigatório. Recrie o venv com: python3.11 -m venv .venv
+g4f[all]>=8.5.8
 streamlit>=1.40.0
 python-dotenv>=1.0.0
 pytest>=8.0.0
