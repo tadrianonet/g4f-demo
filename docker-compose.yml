@@ -1,0 +1,14 @@
+# Imagem oficial mantida pelo projeto GPT4Free.
+# GUI e API OpenAI-compatível em http://localhost:8080
+# Documentação: https://github.com/xtekky/gpt4free
+
+services:
+  g4f:
+    image: hlohaus789/g4f:latest
+    ports:
+      - "8080:8080"
+      - "7900:7900"
+    shm_size: "2g"
+    volumes:
+      - ./har_and_cookies:/app/har_and_cookies
+      - ./generated_media:/app/generated_media
